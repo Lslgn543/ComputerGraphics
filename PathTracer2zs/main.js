@@ -500,6 +500,8 @@ async function init() {
         resetPathTracer();
     });
 
+    // 在开始动画前先重置路径追踪器，确保第一帧渲染正常
+    resetPathTracer();
     requestAnimationFrame(animate);
 }
 

@@ -40,6 +40,8 @@ uniform vec2 groundPlaneSize; // 添加地面尺寸uniform
 // 在uniform变量部分添加玻璃参数
 uniform float glassIOR;  // 玻璃折射率，例如1.5
 
+uniform bool uIsPreview; //预览帧
+
 varying vec3 vUv;
 
 // 光线结构体
@@ -416,7 +418,7 @@ bool hitWorld(Ray r, out HitRecord rec)
 
     // 顶灯（光源）
     {
-        Cube c; c.center = vec3(0.0, 5.0, 0.0); c.size = vec3(4.0, 0.5, 4.0); c.color = vec3(1.0, 1.0, 1.0) * 4.0; c.mat = 2;
+        Cube c; c.center = vec3(0.0, 5.0, 0.0); c.size = vec3(4.0, 0.5, 4.0); c.color = vec3(1.0, 1.0, 1.0) * 5.0; c.mat = 2;
         if (hitCube(c, r, tempRec) && tempRec.t < rec.t) { rec = tempRec; hit = true; }
     }
 
@@ -928,20 +930,48 @@ vec3 color(Ray r, int it) {
 
 // 着色器主入口函数
 void main() {
+    if (uIsPreview) {
+        // === 预览模式：确定性、单次、无随机 ===
+        vec2 aaUVs = vUv.xy; // 无 jitter
+
+        vec3 dir = lowerLeftCorner + aaUVs.x * horizontal + aaUVs.y * vertical - origin;
+        Ray r;
+        r.origin = origin;
+        r.dir = normalize(dir);
+
+        HitRecord rec;
+        vec3 col = vec3(0.0);
+        if (hitWorld(r, rec)) {
+            // 如果是光源，直接显示发光
+            if (length(rec.emission) > 0.001) {
+                col = rec.emission;
+            } else {
+                // 简单 Lambert 近似：albedo * (0.7 + 0.3 * N·L)
+                // 使用固定光源方向（例如来自顶灯方向）
+                vec3 lightDir = normalize(vec3(0.0, 1.0, 0.0)); // 从上往下
+                float ndotl = max(dot(rec.normal, lightDir), 0.0);
+                col = rec.albedo * (0.5 + 0.5 * ndotl); // 加一点环境光避免全黑
+            }
+        } else {
+            // 背景天空
+            vec3 unit_dir = normalize(r.dir);
+            float t = 0.5 * (unit_dir.y + 1.0);
+            col = mix(vec3(1.0), vec3(0.5, 0.7, 1.0), t);
+        }
+
+        gl_FragColor = vec4(col, 1.0);
+        return;
+    }
+
+    // === 正常路径追踪模式 ===
     vec3 col = vec3(0.0);
     const int NUM_SAMPLES = 1;
 
     for (int i = 0; i < NUM_SAMPLES; ++i) {
-        // 生成 [-0.5, 0.5] 的随机偏移
         vec2 jitter = hash2(vUv.xy + vec2(i, iteration)) - 0.5;
-        
-        // 将偏移转换为 UV 空间的子像素偏移
-        vec2 pixelJitter = jitter * screenSizeInv; // 关键：先缩放偏移
-        
-        // 应用到当前 UV
+        vec2 pixelJitter = jitter * screenSizeInv;
         vec2 aaUVs = vUv.xy + pixelJitter;
 
-        // 构造光线方向
         vec3 dir = lowerLeftCorner + aaUVs.x * horizontal + aaUVs.y * vertical - origin;
         Ray r;
         r.origin = origin;

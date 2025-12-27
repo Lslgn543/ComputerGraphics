@@ -185,6 +185,24 @@ class Scene {
         generateSierpinskiTriangles(top, bottomLeft, bottomRight, depth);
     }
 
+    // /**
+    //  * 添加一个空心（线框）立方体到场景中
+    //  * @param {THREE.Vector3} position - 立方体的位置 (x, y, z)
+    //  * @param {number | THREE.Vector3} size - 立方体的边长（默认 1）
+    //  * @param {THREE.Color | string | number} color - 线框颜色（默认绿色 0x00ff00）
+    //  */
+    // addWireframeCube(center, size, color) {
+    //     if (this.wireframeCubes.length < this.maxObjects) {
+    //         this.wireframeCubes.push({
+    //             center: center.clone(),
+    //             size: size.clone ? size.clone() : new THREE.Vector3(size, size, size),
+    //             color: color.clone ? color.clone() : new THREE.Color(color)
+    //         });
+    //         return true;
+    //     }
+    //     return false;
+    // }
+
 
 
     /**
@@ -241,9 +259,229 @@ class Scene {
             2.0,                                // 大小
             new THREE.Color(1.0, 0.84, 0.0),    // 亮金色
             1,                                  // 漫反射材质
-            1                                // 递归深度
+            2                                // 递归深度
         );
         
+        // // 几个球体
+        // this.addSphere(
+        //     new THREE.Vector3(0.0, 0.4, -1.0), 
+        //     0.8, 
+        //     new THREE.Color(0.5, 1.0, 1.0), 
+        //     1
+        // );
+        
+        // this.addSphere(
+        //     new THREE.Vector3(1.0, 0.0, -0.5), 
+        //     0.3, 
+        //     new THREE.Color(1.0, 1.0, 1.0), 
+        //     0
+        // );
+        
+        // this.addSphere(
+        //     new THREE.Vector3(-0.9, 0.7, -0.8), 
+        //     0.15, 
+        //     new THREE.Color(1.0, 1.0, 0.0), 
+        //     1
+        // );
+        
+        // // 光源
+        // this.addSphere(
+        //     new THREE.Vector3(1.0, 0.7, 0.0), 
+        //     0.1, 
+        //     new THREE.Color(1, 0.0, 0.0).multiplyScalar(30.0), 
+        //     2
+        // );
+        
+        // this.addSphere(
+        //     new THREE.Vector3(-1.0, 0.4, -1.0), 
+        //     0.2, 
+        //     new THREE.Color(1.0, 0.5, 0.7), 
+        //     1
+        // );
+
+        // this.addCube(
+        //     new THREE.Vector3(0.5, 0.6, -2.5),
+        //     new THREE.Vector3(6, 2, 0.05),
+        //     new THREE.Color(1.0, 1.0, 1.0), // 玻璃通常用白色或浅色
+        //     3  // ← 材质类型设为 3 表示玻璃
+        // );
+
+
+        // 房间
+        // 房间 
+        // this.addCube(
+        //     new THREE.Vector3(0.0, 2, 7),
+        //     new THREE.Vector3(14.0, 6, 0.3),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+
+        // // 窗户 = 发光面（模拟天光）
+        // this.addCube(
+        //     new THREE.Vector3(0, 2, -7),
+        //     new THREE.Vector3(5, 4, 0.01),
+        //     new THREE.Color(1, 1, 1), // 冷白色天光
+        //     3 
+        // );
+        //窗户 = 发光面（模拟天光）
+        // this.addCube(
+        //     new THREE.Vector3(0, 2, -7),
+        //     new THREE.Vector3(5, 4, 0.05),
+        //     new THREE.Color(2.0, 2.5, 3.0).multiplyScalar(5.0), // 冷白色天光
+        //     2 // 表示光源
+        // );
+
+        // this.addCube(
+        //     new THREE.Vector3(-5, 2, -7),
+        //     new THREE.Vector3(5.0, 6, 0.3),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+        // this.addCube(
+        //     new THREE.Vector3(5, 2, -7),
+        //     new THREE.Vector3(5.0, 6, 0.3),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+        // this.addCube(
+        //     new THREE.Vector3(0, 0, -7),
+        //     new THREE.Vector3(5, 1.5, 0.3),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+        // this.addCube(
+        //     new THREE.Vector3(0, 4.2, -7),
+        //     new THREE.Vector3(5, 1.5, 0.3),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+        // //
+
+        // //墙
+        // this.addCube(
+        //     new THREE.Vector3(7, 2, 0),
+        //     new THREE.Vector3(0.3, 6, 14),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+        
+        // this.addCube(
+        //     new THREE.Vector3(-7, 2, 0),
+        //     new THREE.Vector3(0.3, 6, 14),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+
+        // //天花板
+        // this.addCube(
+        //     new THREE.Vector3(0.0, 5, 0),
+        //     new THREE.Vector3(14.0, 0.3, 14),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+
+        // // //太阳
+        // // this.addSphere(
+        // //     new THREE.Vector3(0, 3.2, -9),
+        // //     0.8,
+        // //     new THREE.Color(40.0, 40.0, 40.0),
+        // //     2
+        // // );
+
+        // //顶灯
+        // this.addCube(
+        //     new THREE.Vector3(0, 5, 0),
+        //     new THREE.Vector3(4, 0.5, 4),
+        //     new THREE.Color(1, 1, 1).multiplyScalar(3),
+        //     2
+        // );
+
+        // //桌子
+        // this.addCube(
+        //     new THREE.Vector3(0, 0.5, -6),
+        //     new THREE.Vector3(6, 0.1, 3),
+        //     new THREE.Color(0.3, 0.3, 0.7),
+        //     1
+        // );
+        // //桌腿
+        // this.addCube(
+        //     new THREE.Vector3(-2.5, 0, -5.0),
+        //     new THREE.Vector3(0.2, 1, 0.2),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+        // //桌腿
+        // this.addCube(
+        //     new THREE.Vector3(2.5, 0, -5.0),
+        //     new THREE.Vector3(0.2, 1, 0.2),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+        // //椅子
+        // this.addCube(
+        //     new THREE.Vector3(0, 0.05, -4),
+        //     new THREE.Vector3(1.5, 0.1, 1.7),
+        //     new THREE.Color(0.4, 0.3, 0.3),
+        //     1
+        // );
+        // //椅子腿
+        // this.addCube(
+        //     new THREE.Vector3(-0.65, -0.25, -3.3),
+        //     new THREE.Vector3(0.2, 0.55, 0.2),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+        // this.addCube(
+        //     new THREE.Vector3(-0.65, -0.25, -4.7),
+        //     new THREE.Vector3(0.2, 0.55, 0.2),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+        // //椅子腿
+        // this.addCube(
+        //     new THREE.Vector3(0.65, -0.25, -3.3),
+        //     new THREE.Vector3(0.2, 0.55, 0.2),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+        // this.addCube(
+        //     new THREE.Vector3(0.65, -0.25, -4.7),
+        //     new THREE.Vector3(0.2, 0.55, 0.2),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+        // //椅子背
+        // this.addCube(
+        //     new THREE.Vector3(0, 0.7, -3.3),
+        //     new THREE.Vector3(1.5, 1.3, 0.2),
+        //     new THREE.Color(1, 1, 1),
+        //     1
+        // );
+
+        // //小灯
+        // this.addSphere(
+        //     new THREE.Vector3(-2, 0.7, -6.3),
+        //     0.2,
+        //     new THREE.Color(1, 1, 1).multiplyScalar(3),
+        //     2
+        // );
+        // //
+        // this.addCube(
+        //     new THREE.Vector3(-2, 0.6, -6.3),
+        //     new THREE.Vector3(0.5, 0.1, 0.5),
+        //     new THREE.Color(0.1, 0.1, 0.1),
+        //     1
+        // );
+
+        // //书架
+        // this.addCube(
+        //     new THREE.Vector3(0, 0, 0),
+        //     new THREE.Vector3(2, 2, 2),
+        //     new THREE.Color(0.1, 0.1, 0.1),
+        //     1
+        // );
+
+
 
     }
 
@@ -312,6 +550,38 @@ class Scene {
         while (cubeMaterials.length < this.maxObjects) {
             cubeMaterials.push(0);
         }
+
+        // // 创建用于存储所有空心立方体数据的扁平数组
+        // const wireframeCubeCenters = [];
+        // const wireframeCubeSizes = [];
+        // const wireframeCubeColors = [];
+        // const wireframeCubeMaterials = [];
+        
+        // // 填充空心立方体数据数组
+        // for (let i = 0; i < this.wireframeCubes.length; i++) {
+        //     const cube = this.wireframeCubes[i];
+        //     wireframeCubeCenters.push(cube.center.x, cube.center.y, cube.center.z);
+            
+        //     wireframeCubeSizes.push(cube.size.x, cube.size.y, cube.size.z);
+            
+        //     wireframeCubeColors.push(cube.color.r, cube.color.g, cube.color.b);
+        //     wireframeCubeMaterials.push(cube.material);
+        // }
+        
+        // // 填充剩余位置(确保数组大小固定)
+        // while (wireframeCubeCenters.length < this.maxObjects * 3) {
+        //     wireframeCubeCenters.push(0);
+        // }
+        // while (wireframeCubeSizes.length < this.maxObjects * 3) {
+        //     wireframeCubeSizes.push(0);
+        // }
+        // while (wireframeCubeColors.length < this.maxObjects * 3) {
+        //     wireframeCubeColors.push(0);
+        // }
+        // while (wireframeCubeMaterials.length < this.maxObjects) {
+        //     wireframeCubeMaterials.push(0);
+        // }
+        
         // 创建用于存储所有三角形数据的扁平数组
         const triangleVertices = [];
         const triangleColors = [];
@@ -354,7 +624,11 @@ class Scene {
             cubeSizes: { value: new Float32Array(cubeSizes) },
             cubeColors: { value: new Float32Array(cubeColors) },
             cubeMaterials: { value: new Int32Array(cubeMaterials) },
-
+            // wireframeCubeCount: { value: this.wireframeCubes.length },
+            // wireframeCubeCenters: { value: new Float32Array(wireframeCubeCenters) },
+            // wireframeCubeSizes: { value: new Float32Array(wireframeCubeSizes) },
+            // wireframeCubeColors: { value: new Float32Array(wireframeCubeColors) },
+            // wireframeCubeMaterials: { value: new Int32Array(wireframeCubeMaterials) },
             // 添加三角形uniform
             triangleCount: { value: this.triangles.length },
             triangleVertices: { value: new Float32Array(triangleVertices) },
