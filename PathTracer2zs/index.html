@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL蒙特卡洛路径跟踪</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 1rem;
+        }
+        
+        #container {
+            display: flex;
+            gap: 1.5rem;
+            max-width: 1400px;
+            width: 100%;
+            height: 90vh;
+            max-height: 900px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            min-width: 400px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .canvas-header {
+            padding: 1rem;
+            background: #252525;
+            border-bottom: 1px solid #333;
+        }
+        
+        .canvas-header h2 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #f0f0f0;
+        }
+        
+        .canvas-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            background: #000;
+        }
+        
+        .controls-container {
+            width: 350px;
+            height: 100%;
+            background: #1e1e1e;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .controls-header {
+            padding: 1rem;
+            background: #252525;
+            border-bottom: 1px solid #333;
+        }
+        
+        .controls-header h2 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #f0f0f0;
+        }
+        
+        #controls {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .control-section {
+            background: #252525;
+            border-radius: 6px;
+            padding: 1rem;
+            border: 1px solid #333;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #f0f0f0;
+            display: block;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            align-items: center;
+        }
+        
+        .full-width {
+            width: 100%;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex: 1;
+        }
+        
+        label {
+            font-size: 0.85rem;
+            color: #b0b0b0;
+        }
+        
+        input[type="number"] {
+            padding: 0.5rem;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #555;
+            box-shadow: 0 0 0 2px rgba(85, 85, 85, 0.3);
+        }
+        
+        input[type="color"] {
+            width: 100%;
+            height: 36px;
+            padding: 2px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        button {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            background: #3a3a3a;
+            border: 1px solid #4a4a4a;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        button:hover {
+            background: #4a4a4a;
+            border-color: #5a5a5a;
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        #addSphere {
+            background: #3a6ea5;
+            border-color: #4a7eba;
+        }
+        
+        #addSphere:hover {
+            background: #4a7eba;
+        }
+        
+        #clearSpheres {
+            background: #a53a3a;
+            border-color: #ba4a4a;
+        }
+        
+        #clearSpheres:hover {
+            background: #ba4a4a;
+        }
+        
+        .sphere-list-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background: #333;
+            padding: 0.25rem;
+        }
+        
+        .sphere-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: #2a2a2a;
+            margin-bottom: 0.25rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            border: 1px solid #333;
+        }
+        
+        .sphere-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .sphere-item:hover {
+            background: #333;
+            border-color: #444;
+        }
+        
+        .sphere-item span {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #d0d0d0;
+        }
+        
+        .sphere-item button {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            background: #4a3a3a;
+            border-color: #5a4a4a;
+            flex: none;
+            min-width: 50px;
+        }
+        
+        .sphere-item button:hover {
+            background: #5a4a4a;
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #252525;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .sphere-material-info {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 900px) {
+            #container {
+                flex-direction: column;
+                height: auto;
+                max-height: none;
+            }
+            
+            .canvas-container, .controls-container {
+                width: 100%;
+                height: 400px;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="canvas-container">
+            <div class="canvas-header">
+                <h2>渲染预览</h2>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas id="canvas" width="800" height="600"></canvas>
+            </div>
+        </div>
+        
+        <div class="controls-container">
+            <div class="controls-header">
+                <h2>场景控制</h2>
+            </div>
+            <div id="controls">
+                <div class="control-section">
+                    <span class="section-title">物体位置</span>
+                    <div class="control-group full-width">
+                        <div class="input-group">
+                            <label>X:</label>
+                            <input type="number" id="posX" step="0.1" value="0.0">
+                        </div>
+                        <div class="input-group">
+                            <label>Y:</label>
+                            <input type="number" id="posY" step="0.1" value="0.0">
+                        </div>
+                        <div class="input-group">
+                            <label>Z:</label>
+                            <input type="number" id="posZ" step="0.1" value="-1.0">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <span class="section-title">物体属性</span>
+                    <div class="control-group">
+                        <div class="input-group">
+                            <label>类型:</label>
+                            <select id="objectType" style="
+                                padding: 0.5rem;
+                                background: #333;
+                                border: 1px solid #444;
+                                color: #fff;
+                                border-radius: 4px;
+                                font-size: 0.9rem;
+                                width: 100%;
+                            ">
+                                <option value="0">球体</option>
+                                <option value="1">立方体</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>颜色:</label>
+                            <input type="color" id="color" value="#ff5555">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="input-group">
+                            <label>大小:</label>
+                            <input type="number" id="radius" step="0.1" min="0.1" value="0.5">
+                        </div>
+                        <div class="input-group">
+                            <label>材质:</label>
+                            <select id="material" style="
+                                padding: 0.5rem;
+                                background: #333;
+                                border: 1px solid #444;
+                                color: #fff;
+                                border-radius: 4px;
+                                font-size: 0.9rem;
+                                width: 100%;
+                            ">
+                                <option value="0">镜面</option>
+                                <option value="1" selected>漫反射</option>
+                                <option value="2">光源</option>
+                                <option value="3">玻璃</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <span class="section-title">操作</span>
+                    <div class="button-group">
+                        <button id="addObject">添加物体</button>
+                        <button id="clearAll">清除所有</button>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <span class="section-title">物体列表</span>
+                    <div class="sphere-list-container" id="sphereList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="three/three.js"></script>
+	<script type="module" src="main.js"></script>
+</body>
+</html>
